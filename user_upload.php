@@ -20,9 +20,21 @@
 	
 	//var_dump(fgetcsv($file));
 	//or could use print_r
+	
+	//empty array to put the csv file into
+	$lines = [];
+	
+	//skipping the first line of the CSV file because it has the headings name, surname, email
+	//for now
+	fgetcsv($file);
+	
+	//load each line of the CSV file, to the end of the file, into an array
 	while(! feof($file)) {
-		var_dump(fgetcsv($file));
+		$lines[] = fgetcsv($file);
 	}
 		
+	//Close the CSV file
 	fclose($file);
+	
+	var_dump($lines);
 ?>
