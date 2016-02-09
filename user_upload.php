@@ -41,6 +41,7 @@
 	foreach ($lines as &$value) {
 		$value[0] = ucfirst($value[0]);
 		$value[1] = ucfirst($value[1]);
+		$value[2] = strtolower($value[2]);
 	}
 	
 	//(temporary) display the contents of the imported data
