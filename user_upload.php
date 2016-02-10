@@ -46,5 +46,35 @@
 	
 	//(temporary) display the contents of the imported data
 	var_dump($lines);
+	
+	//MySQL
+	
+	//Connect to MySQL using the host, user and password given in the command-line options
+	$conn = mysqli_connect($options["h"],$options["u"],$options["p"]);
+	
+	//Create the database if it doesn't exist already
+	$sql = "CREATE DATABASE IF NOT EXISTS myDB";
+		if (mysqli_query($conn, $sql)) {
+			echo "Database created successfully\n";
+	
+	}
+	
+	$sql = "CREATE TABLE users
+		(
+			name varchar(255),
+			surname varchar(255),
+			email varchar(255)
+		)";
 		
+	if (mysqli_query($conn, $sql)) {
+		echo "Table created successfully";
+	}
+	
+	$sql = "CREATE UNIQUE INDEX email_index ON users (email)";
+	
+	if (mysqli_query($conn, $sql)) {
+		echo "Index created successfully";
+	}
+	
+	mysqli_close($conn);
 ?>
