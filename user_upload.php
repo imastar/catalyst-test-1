@@ -99,6 +99,13 @@
 		echo "Index created successfully\n";
 	}
 	
+	//Insert the data into the database
+	foreach($lines as $value)
+	{
+		$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
+		mysqli_query($conn, $sql);
+	}
+	
 	//Close the MySQL connection
 	mysqli_close($conn);
 ?>
