@@ -99,6 +99,13 @@
 		echo "Index created successfully\n";
 	}
 	
+	//Escape any characters that may interfere with the SQL query, eg the apostrophe in surname
+	foreach ($lines as &$value) {
+		$value[0] = mysqli_real_escape_string($conn, $value[0]);
+		$value[1] = mysqli_real_escape_string($conn, $value[1]);
+		$value[2] = mysqli_real_escape_string($conn, $value[2]);
+	}
+	
 	//Insert the data into the database
 	foreach($lines as $value)
 	{
