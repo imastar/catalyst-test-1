@@ -46,5 +46,73 @@
 	
 	//(temporary) display the contents of the imported data
 	var_dump($lines);
+	
+	//MySQL
+	
+	//Connect to MySQL using the host, user and password given in the command-line options
+	$conn = mysqli_connect($options["h"],$options["u"],$options["p"]);
+	
+	if (!$conn) {
+		die("Connection failed: " . mysqli_connect_error());
+	}
+	
+	//Try to connect, to see if the database exists
+	//If it doesn't exist, create one
+	if(!mysqli_select_db($conn,'myDB')) {
+		echo "Existing database not found, creating DB\n";
+		$sql = "CREATE DATABASE myDB";
+		//If the database is created successfully, print a message
+		if (mysqli_query($conn, $sql)) {
+			echo "Database created successfully\n";
+		}
+	}
+	//If the database already exists, print a message
+	else {
+		echo "Database already exists, using existing database\n";
+	}
+	
+	//If the table already exists, drop it.
+	$sql = "DROP TABLE IF EXISTS users";
+	if(!mysqli_query($conn, $sql)) {
+		echo "Drop if exists failed\n";
+	}
+	
+	//Create the table
+	$sql = "CREATE TABLE users
+		(
+			name varchar(255),
+			surname varchar(255),
+			email varchar(255)
+		)";
 		
+	if (mysqli_query($conn, $sql)) {
+		echo "Table created successfully\n";
+	}
+	else {
+		echo "Didn't create table\n";
+	}
+	
+	//Create unique index on email
+	$sql = "CREATE UNIQUE INDEX email_index ON users (email)";
+	
+	if (mysqli_query($conn, $sql)) {
+		echo "Index created successfully\n";
+	}
+	
+	//Escape any characters that may interfere with the SQL query, eg the apostrophe in surname
+	foreach ($lines as &$value) {
+		$value[0] = mysqli_real_escape_string($conn, $value[0]);
+		$value[1] = mysqli_real_escape_string($conn, $value[1]);
+		$value[2] = mysqli_real_escape_string($conn, $value[2]);
+	}
+	
+	//Insert the data into the database
+	foreach($lines as $value)
+	{
+		$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
+		mysqli_query($conn, $sql);
+	}
+	
+	//Close the MySQL connection
+	mysqli_close($conn);
 ?>
