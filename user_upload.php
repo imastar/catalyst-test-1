@@ -88,9 +88,19 @@
 		$filtered = [];
 		//Go through each line
 		foreach ($lines as &$value) {
-			//Capitalise first name and last name
-			$value[0] = ucfirst($value[0]);
-			$value[1] = ucfirst($value[1]);
+			//Fix capitalization of first and last name
+			for($i = 0; $i <= 1; $i++) {
+				//To lower case
+				$value[$i] = strtolower($value[$i]);
+				//Capitalize the first character
+				$value[$i] = ucfirst($value[$i]);
+				//To try to keep names like O'Connor capitalized while still fixing up other capitals
+				//Anything after a non-word character (eg apostrophe or dot or space) is capitalized
+				$value[$i] = preg_replace_callback('/((?<=\W)\w)/', function ($matches) {
+				return strtoupper($matches[0]);
+				}, $value[$i]);
+			};
+
 			//Email lower case
 			$value[2] = strtolower($value[2]);
 		
@@ -108,6 +118,7 @@
 				error_log("Email invalid: " . $value[2]);
 			}
 		}
+
 		//Return the processed and filtered array of data
 		return $filtered;
 	}
@@ -141,6 +152,7 @@
 		
 		//If the table already exists, drop it.
 		$sql = "DROP TABLE IF EXISTS users";
+		mysqli_query($conn, $sql);
 		
 		//Create the table
 		$sql = "CREATE TABLE users
