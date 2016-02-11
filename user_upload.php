@@ -9,8 +9,21 @@
 		)
 	);
 	
+	$dry_run = false;
+	foreach ($options as $key => $value) {
+		if ($key == 'dry_run') {
+			$dry_run = true;
+		}
+	}
+	
+	if($dry_run == true) {
+	
+	
+	
+	}
+	
 	//(temporary) Display the inputted command line options
-	var_dump($options);
+	//var_dump($options);
 	
 	//For the CSV file
 	//Open the file given in --file command line option
@@ -30,7 +43,7 @@
 	fclose($file);
 	
 	//(temporary) display the contents of the imported data
-	var_dump($lines);
+	//var_dump($lines);
 	
 	//removing the first line of the CSV file because it has the headings name, surname, email
 	array_shift($lines);
@@ -45,7 +58,7 @@
 	}
 	
 	//(temporary) display the contents of the imported data
-	var_dump($lines);
+	//var_dump($lines);
 	
 	//MySQL
 	
