@@ -9,9 +9,11 @@
 		)
 	);
 	
+	//Set the variables for command line options
 	//Set the variables for command line options that affect control flow
 	$dry_run = false;
 	$create_table = false;
+	$help = false;
 	foreach ($options as $key => $value) {
 		if ($key == 'dry_run') {
 			$dry_run = true;
@@ -19,19 +21,41 @@
 		if ($key == 'create_table') {
 			$create_table = true;
 		}
+		if ($key == 'help') {
+			$help = true;
+		}
+		//Set the variables for command line options that have parameters
+		if ($key == 'file') {
+			$filename = $options["file"];
+		}
+		if ($key == 'h') {
+			$dbHost = $options["h"];
+		}
+		if ($key == 'u') {
+			$dbUser = $options["u"];
+		}
+		if ($key == 'p') {
+			$dbPass = $options["p"];
+		}
 	}
-	
-	//Set the variables for command line options that have parameters
-	$filename = $options["file"];
-	$dbHost = $options["h"];
-	$dbUser = $options["u"];
-	$dbPass = $options["p"];
 	
 	//Main control flow
 	
+	//If help command is used, show help
+	if($help) {
+		echo "Help\n
+		--file [csv file name] - name of CSV to be parsed\n
+		--create_table - Connects to the database, creates database and users table\n
+		--dry_run - Processes the CSV file, doesn't touch database\n
+		-u - MySQL user\n
+		-p - MySQL pass\n
+		-h - MySQL host\n
+		--help - this help\n";
+		return;
+	}
 	//If dry run option is selected, we will just process the lines, but not interact with the database
 	//Wasn't really sure of this, what the dry run meant so will just leave it like this
-	if($dry_run) {
+	else if($dry_run) {
 		//Process the CSV file - loading, capitalization, email validation etc
 		$lines = csvProcessing($filename);
 		//Finish
