@@ -10,16 +10,14 @@
 	);
 	
 	$dry_run = false;
+	$create_table = false;
 	foreach ($options as $key => $value) {
 		if ($key == 'dry_run') {
 			$dry_run = true;
 		}
-	}
-	
-	if($dry_run == true) {
-	
-	
-	
+		if ($key == 'create_table') {
+			$create_table = true;
+		}
 	}
 	
 	//(temporary) Display the inputted command line options
@@ -91,6 +89,7 @@
 	}
 	
 	if($dry_run) {
+		mysqli_close($conn);
 		return;
 	}
 	
@@ -135,6 +134,13 @@
 	
 	if (mysqli_query($conn, $sql)) {
 		echo "Index created successfully\n";
+	}
+	
+	//If the create_table option was specified, we have created the table now
+	//So we can quit
+	if($create_table) {
+		mysqli_close($conn);
+		return;
 	}
 	
 	//Go through each line to check and then insert
