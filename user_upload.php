@@ -99,18 +99,27 @@
 		echo "Index created successfully\n";
 	}
 	
-	//Escape any characters that may interfere with the SQL query, eg the apostrophe in surname
-	foreach ($lines as &$value) {
-		$value[0] = mysqli_real_escape_string($conn, $value[0]);
-		$value[1] = mysqli_real_escape_string($conn, $value[1]);
-		$value[2] = mysqli_real_escape_string($conn, $value[2]);
-	}
-	
-	//Insert the data into the database
-	foreach($lines as $value)
+	//Go through each line to check and then insert
+	foreach($lines as &$value)
 	{
-		$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
-		mysqli_query($conn, $sql);
+		//Trim leading and trailing whitespace from email so they are not declared invalid due to whitespace
+		$value[2] = trim($value[2]);
+		//Check if the email is valid
+		if(filter_var($value[2], FILTER_VALIDATE_EMAIL))
+		{
+			//Escape any characters that may interfere with the SQL query, eg the apostrophe in surname
+			$value[0] = mysqli_real_escape_string($conn, $value[0]);
+			$value[1] = mysqli_real_escape_string($conn, $value[1]);
+			$value[2] = mysqli_real_escape_string($conn, $value[2]);
+			
+			//Insert the data
+			$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
+			mysqli_query($conn, $sql);
+		}
+		//If the email is invalid, output an error
+		else {
+			error_log("Email invalid, not inserted: " . $value[2]);
+		}
 	}
 	
 	//Close the MySQL connection
