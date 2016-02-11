@@ -112,9 +112,9 @@
 		echo "Index created successfully\n";
 	}
 	
-	//Go through each line to check and then insert
-	foreach($lines as &$value)
-	{
+	$filtered = [];
+	//Go through each line to check
+	foreach($lines as &$value) {
 		//Trim leading and trailing whitespace from email so they are not declared invalid due to whitespace
 		$value[2] = trim($value[2]);
 		//Check if the email is valid
@@ -124,15 +124,20 @@
 			$value[0] = mysqli_real_escape_string($conn, $value[0]);
 			$value[1] = mysqli_real_escape_string($conn, $value[1]);
 			$value[2] = mysqli_real_escape_string($conn, $value[2]);
-			
-			//Insert the data
-			$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
-			mysqli_query($conn, $sql);
+			//Put the data into a new array just for valid entries
+			$filtered[] = $value;
 		}
 		//If the email is invalid, output an error
 		else {
-			error_log("Email invalid, not inserted: " . $value[2]);
+			error_log("Email invalid: " . $value[2]);
 		}
+	}
+	
+	//Go through each line to check and then insert
+	foreach($filtered as &$value)
+	{
+		$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
+		mysqli_query($conn, $sql);
 	}
 	
 	//Close the MySQL connection
