@@ -58,48 +58,7 @@
 		return;
 	}
 	
-	//Try to connect, to see if the database exists
-	//If it doesn't exist, create one
-	if(!mysqli_select_db($conn,'myDB')) {
-		echo "Existing database not found, creating DB\n";
-		$sql = "CREATE DATABASE myDB";
-		//If the database is created successfully, print a message
-		if (mysqli_query($conn, $sql)) {
-			echo "Database created successfully\n";
-		}
-	}
-	//If the database already exists, print a message
-	else {
-		echo "Database already exists, using existing database\n";
-	}
-	
-	//If the table already exists, drop it.
-	$sql = "DROP TABLE IF EXISTS users";
-	if(!mysqli_query($conn, $sql)) {
-		echo "Drop if exists failed\n";
-	}
-	
-	//Create the table
-	$sql = "CREATE TABLE users
-		(
-			name varchar(255),
-			surname varchar(255),
-			email varchar(255)
-		)";
-		
-	if (mysqli_query($conn, $sql)) {
-		echo "Table created successfully\n";
-	}
-	else {
-		echo "Didn't create table\n";
-	}
-	
-	//Create unique index on email
-	$sql = "CREATE UNIQUE INDEX email_index ON users (email)";
-	
-	if (mysqli_query($conn, $sql)) {
-		echo "Index created successfully\n";
-	}
+	dbCreate($conn);
 	
 	//If the create_table option was specified, we have created the table now
 	//So we can quit
@@ -108,12 +67,7 @@
 		return;
 	}
 	
-	//Go through each line to check and then insert
-	foreach($filtered as &$value)
-	{
-		$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
-		mysqli_query($conn, $sql);
-	}
+	insertData($filtered, $conn);
 	
 	//Close the MySQL connection
 	mysqli_close($conn);
@@ -149,6 +103,60 @@
 		}
 		
 		return $lines;
+	}
+	
+	function dbCreate($conn) {
+		//Try to connect, to see if the database exists
+		//If it doesn't exist, create one
+		if(!mysqli_select_db($conn,'myDB')) {
+			echo "Existing database not found, creating DB\n";
+			$sql = "CREATE DATABASE myDB";
+			//If the database is created successfully, print a message
+			if (mysqli_query($conn, $sql)) {
+				echo "Database created successfully\n";
+			}
+		}
+		//If the database already exists, print a message
+		else {
+			echo "Database already exists, using existing database\n";
+		}
+		
+		//If the table already exists, drop it.
+		$sql = "DROP TABLE IF EXISTS users";
+		if(!mysqli_query($conn, $sql)) {
+			echo "Drop if exists failed\n";
+		}
+		
+		//Create the table
+		$sql = "CREATE TABLE users
+			(
+				name varchar(255),
+				surname varchar(255),
+				email varchar(255)
+			)";
+		
+		if (mysqli_query($conn, $sql)) {
+			echo "Table created successfully\n";
+		}
+		else {
+			echo "Didn't create table\n";
+		}
+		
+		//Create unique index on email
+		$sql = "CREATE UNIQUE INDEX email_index ON users (email)";
+	
+		if (mysqli_query($conn, $sql)) {
+			echo "Index created successfully\n";
+		}
+	}
+	
+	function insertData($filtered, $conn) {
+		//Go through each line to check and then insert
+		foreach($filtered as &$value)
+		{
+			$sql = "INSERT INTO users (name, surname, email) VALUES ('$value[0]', '$value[1]', '$value[2]')";
+			mysqli_query($conn, $sql);
+		}
 	}
 	
 ?>
